@@ -1,0 +1,40 @@
+{
+  "name": "subtraktionskarte",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "test": "bun test src/domain/subtractionGroups.bun.test.ts",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "test:ui": "vitest run"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/user-event": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "eslint": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "eslint-plugin-react-refresh": "latest",
+    "globals": "latest",
+    "jsdom": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "vitest": "latest",
+    "typescript-eslint": "latest"
+  }
+}
