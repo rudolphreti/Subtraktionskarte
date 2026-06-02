@@ -9,11 +9,12 @@ export const strings = {
   appTitle: 'Subtraktionskarte bis 20',
   eyebrow: 'Didaktische Gruppen fürs Subtrahieren',
   intro:
-    'Tippe oder fahre über eine Rechnung. Die Karte markiert Ergebnis, Rechenfamilie, Minuend-Zeile und Subtrahend-Spalte gleichzeitig.',
+    'Tippe eine Rechnung an. Die Karte markiert dann die passende didaktische Gruppe farbig.',
   noSelectionTitle: 'Noch keine Rechnung ausgewählt',
-  noSelectionText: 'Tippe eine Rechnung an, um die Überlagerungen deutlich zu sehen.',
+  noSelectionText: 'Tippe eine Rechnung an, um die passende Gruppe deutlich zu sehen.',
   activeCalculation: 'Aktive Rechnung',
   groupPrefix: 'Gruppe',
+  noTeachingGroup: 'Keine der vier Gruppen',
   subgroupPrefix: 'Untergruppe',
   resultPrefix: 'Ergebnis',
   minuendPrefix: 'Minuend',
@@ -27,8 +28,8 @@ export const strings = {
       description: 'Minuend ist größer als 10, Subtrahend kleiner als 10 und das Ergebnis liegt unter 10.',
     },
     crossingAboveTen: {
-      label: 'Über den Zehner, Ergebnis 10 oder höher',
-      description: 'Minuend ist größer als 10, Subtrahend kleiner als 10 und das Ergebnis bleibt 10 oder höher.',
+      label: 'Über den Zehner, Ergebnis über 10',
+      description: 'Minuend ist größer als 10, Subtrahend kleiner als 10 und das Ergebnis bleibt über 10.',
     },
     bothAtLeastTen: {
       label: 'Beide Zahlen mindestens 10',

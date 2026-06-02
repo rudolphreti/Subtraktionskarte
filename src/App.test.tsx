@@ -45,7 +45,22 @@ describe('Subtraction map interactions', () => {
     expect(within(tooltip).getByText(/Untergruppe: Ergebnis ist gleich dem Subtrahenden/i)).toBeInTheDocument()
   })
 
-  it('highlights the group, result, minuend row and subtrahend column without red or blue result styling', async () => {
+  it('keeps the table black and white until a teaching group is selected', () => {
+    render(<App />)
+
+    const fact = screen.getByRole('button', { name: '14 − 9 = 5' })
+    const columnHeader = screen.getByText('9', { selector: '[data-table-header="subtrahend"]' })
+    const rowHeader = screen.getByText('14', { selector: '[data-table-header="minuend"]' })
+
+    expect(fact).toHaveAttribute('data-active-primary-group', '')
+    expect(fact).toHaveClass('bg-white')
+    expect(fact).toHaveClass('text-slate-950')
+    expect(fact.className).not.toContain('amber')
+    expect(columnHeader).toHaveClass('bg-white')
+    expect(rowHeader).toHaveClass('bg-white')
+  })
+
+  it('highlights only the selected teaching group with its configured color', async () => {
     const user = userEvent.setup()
     render(<App />)
 
@@ -53,22 +68,19 @@ describe('Subtraction map interactions', () => {
     await user.click(focusedFact)
 
     expect(focusedFact).toHaveAttribute('aria-pressed', 'true')
-    expect(focusedFact).toHaveAttribute('data-active-result', 'true')
-    expect(focusedFact).toHaveAttribute('data-active-row', 'true')
-    expect(focusedFact).toHaveAttribute('data-active-column', 'true')
     expect(focusedFact).toHaveAttribute('data-active-primary-group', 'crossingBelowTen')
     expect(focusedFact).toHaveAttribute('data-active-subgroups', 'resultFive')
-    expect(focusedFact).not.toHaveClass('outline-rose-500')
-    expect(focusedFact.className).not.toContain('rgb(30_64_175)')
+    expect(focusedFact).not.toHaveAttribute('data-active-result')
+    expect(focusedFact).not.toHaveAttribute('data-active-row')
+    expect(focusedFact).not.toHaveAttribute('data-active-column')
+    expect(focusedFact).toHaveClass('bg-amber-100')
 
-    const sameResult = screen.getByRole('button', { name: '11 − 6 = 5' })
-    expect(sameResult).toHaveAttribute('data-active-result', 'true')
-    expect(sameResult).toHaveAttribute('data-active-primary-group', 'crossingBelowTen')
-    expect(sameResult).not.toHaveClass('outline-rose-500')
-    expect(sameResult.className).not.toContain('rgb(30_64_175)')
+    const sameGroup = screen.getByRole('button', { name: '11 − 6 = 5' })
+    expect(sameGroup).toHaveAttribute('data-active-primary-group', 'crossingBelowTen')
+    expect(sameGroup).toHaveClass('bg-amber-100')
 
-    const sameColumn = screen.getByRole('button', { name: '17 − 9 = 8' })
-    expect(sameColumn).toHaveAttribute('data-active-column', 'true')
-    expect(sameColumn).not.toHaveClass('outline-rose-500')
+    const sameColumnDifferentGroup = screen.getByRole('button', { name: '17 − 9 = 8' })
+    expect(sameColumnDifferentGroup).toHaveAttribute('data-active-primary-group', '')
+    expect(sameColumnDifferentGroup).toHaveClass('bg-white')
   })
 })
