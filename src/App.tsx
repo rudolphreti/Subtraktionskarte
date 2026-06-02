@@ -15,28 +15,28 @@ const LIMIT = 20
 const tableNumbers = Array.from({ length: LIMIT + 1 }, (_, index) => index)
 
 const getFactButtonClasses = (fact: ClassifiedFact, active: HighlightContext | null, isSelected: boolean) => {
-  const isActiveGroup = active?.primaryGroup === fact.primaryGroup
-  const isActiveResult = active?.result === fact.result
+  const activePrimaryGroup = active?.primaryGroup === fact.primaryGroup ? active?.primaryGroup ?? null : null
+  const isActiveGroup = Boolean(activePrimaryGroup)
   const activeSubgroup = active?.subgroups.find((subgroup) => fact.subgroups.includes(subgroup))
 
   return [
     'relative flex h-full w-full min-w-0 touch-manipulation select-none items-center justify-center rounded-[2px] border text-[clamp(0.35rem,1.6vmin,0.75rem)] font-semibold transition duration-150 sm:rounded-md',
-    groupStyles[fact.primaryGroup],
-    isActiveGroup ? 'opacity-100 saturate-150' : active ? 'opacity-35 grayscale' : 'opacity-90',
-    isActiveResult ? 'scale-105 border-slate-950 bg-white text-slate-950 shadow-lg' : '',
+    activePrimaryGroup ? groupStyles[activePrimaryGroup] : 'border-slate-300 bg-white text-slate-950',
+    isActiveGroup ? 'opacity-100 saturate-150' : active ? 'opacity-35 grayscale' : 'opacity-100',
     activeSubgroup ? subgroupRingStyles[activeSubgroup] : '',
-    isSelected ? 'z-20 scale-110 border-slate-950 bg-slate-950 text-white shadow-xl' : '',
+    isSelected ? 'z-20 scale-110 border-slate-950 shadow-xl outline outline-2 outline-slate-950' : '',
     !active ? 'hover:scale-105 hover:shadow-md' : 'hover:opacity-100',
   ].join(' ')
 }
 
-const getFactDataAttributes = (fact: ClassifiedFact, active: HighlightContext | null) => ({
-  'data-active-result': active?.result === fact.result ? 'true' : 'false',
-  'data-active-row': active?.rowMinuend === fact.minuend ? 'true' : 'false',
-  'data-active-column': active?.columnSubtrahend === fact.subtrahend ? 'true' : 'false',
-  'data-active-primary-group': active?.primaryGroup === fact.primaryGroup ? fact.primaryGroup : '',
-  'data-active-subgroups': active?.subgroups.filter((subgroup) => fact.subgroups.includes(subgroup)).join(' '),
-})
+const getFactDataAttributes = (fact: ClassifiedFact, active: HighlightContext | null) => {
+  const activePrimaryGroup = active?.primaryGroup === fact.primaryGroup ? active?.primaryGroup ?? null : null
+
+  return {
+    'data-active-primary-group': activePrimaryGroup ?? '',
+    'data-active-subgroups': activePrimaryGroup ? active?.subgroups.filter((subgroup) => fact.subgroups.includes(subgroup)).join(' ') : '',
+  }
+}
 
 function App() {
   const facts = useMemo(() => buildSubtractionFacts(LIMIT).map(classifyFact), [])
@@ -55,15 +55,14 @@ function App() {
           data-testid="subtraction-table-grid"
           className="grid [--table-cell-size:min(calc((100vw-0.5rem-21px)/22),calc((100dvh-0.5rem-21px)/22))] auto-rows-[var(--table-cell-size)] grid-cols-[repeat(22,var(--table-cell-size))] gap-px"
         >
-          <div className="sticky left-0 top-0 z-30 flex items-center justify-center rounded-[2px] bg-slate-900 text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black text-white sm:rounded-md">
+          <div className="sticky left-0 top-0 z-30 flex items-center justify-center rounded-[2px] border border-slate-300 bg-white text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black text-slate-950 sm:rounded-md">
             −
           </div>
           {tableNumbers.map((subtrahend) => (
             <div
               key={`subtrahend-${subtrahend}`}
-              className={`sticky top-0 z-20 flex items-center justify-center rounded-[2px] text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black sm:rounded-md ${
-                activeContext?.columnSubtrahend === subtrahend ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-950'
-              }`}
+              data-table-header="subtrahend"
+              className="sticky top-0 z-20 flex items-center justify-center rounded-[2px] border border-slate-300 bg-white text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black text-slate-950 sm:rounded-md"
             >
               {subtrahend}
             </div>
@@ -72,9 +71,8 @@ function App() {
           {tableNumbers.map((minuend) => [
             <div
               key={`minuend-${minuend}`}
-              className={`sticky left-0 z-10 flex items-center justify-center rounded-[2px] text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black sm:rounded-md ${
-                activeContext?.rowMinuend === minuend ? 'bg-blue-800 text-white' : 'bg-blue-100 text-blue-950'
-              }`}
+              data-table-header="minuend"
+              className="sticky left-0 z-10 flex items-center justify-center rounded-[2px] border border-slate-300 bg-white text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black text-slate-950 sm:rounded-md"
             >
               {minuend}
             </div>,
@@ -82,7 +80,7 @@ function App() {
               const fact = factsById.get(factId({ minuend, subtrahend }))
 
               if (!fact) {
-                return <div key={`empty-${minuend}-${subtrahend}`} className="h-full w-full rounded-[2px] bg-slate-100/60 sm:rounded-md" />
+                return <div key={`empty-${minuend}-${subtrahend}`} className="h-full w-full rounded-[2px] border border-slate-200 bg-white sm:rounded-md" />
               }
 
               const isSelected = activeFact?.id === fact.id
@@ -109,9 +107,11 @@ function App() {
                         {fact.minuend} − {fact.subtrahend} = {fact.result}
                       </span>
                       <span className="mt-2 block">
-                        {strings.groupPrefix}: {strings.groups[fact.primaryGroup].label}
+                        {strings.groupPrefix}: {fact.primaryGroup ? strings.groups[fact.primaryGroup].label : strings.noTeachingGroup}
                       </span>
-                      <span className="mt-1 block font-normal text-slate-700">{strings.groups[fact.primaryGroup].description}</span>
+                      {fact.primaryGroup ? (
+                        <span className="mt-1 block font-normal text-slate-700">{strings.groups[fact.primaryGroup].description}</span>
+                      ) : null}
                       {fact.subgroups.map((subgroup) => (
                         <span key={subgroup} className="mt-2 block rounded-lg bg-slate-100 px-2 py-1">
                           {strings.subgroupPrefix}: {strings.subgroups[subgroup]}

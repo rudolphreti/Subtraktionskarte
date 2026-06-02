@@ -14,16 +14,13 @@ export type SubtractionFact = {
 
 export type ClassifiedFact = SubtractionFact & {
   id: string
-  primaryGroup: TeachingGroupId
+  primaryGroup: TeachingGroupId | null
   tags: Array<TeachingGroupId | TeachingSubgroupId>
   subgroups: TeachingSubgroupId[]
 }
 
 export type HighlightContext = {
-  rowMinuend: number
-  columnSubtrahend: number
-  result: number
-  primaryGroup: TeachingGroupId
+  primaryGroup: TeachingGroupId | null
   subgroups: TeachingSubgroupId[]
 }
 
@@ -31,7 +28,7 @@ const isCrossingBelowTen = ({ minuend, subtrahend, result }: SubtractionFact) =>
   minuend > 10 && subtrahend < 10 && result < 10
 
 const isCrossingAboveTen = ({ minuend, subtrahend, result }: SubtractionFact) =>
-  minuend > 10 && subtrahend < 10 && result >= 10
+  minuend > 10 && subtrahend < 10 && result > 10
 
 const isBothAtLeastTen = ({ minuend, subtrahend }: SubtractionFact) => minuend >= 10 && subtrahend >= 10
 
@@ -74,7 +71,7 @@ export const getSubgroups = (fact: SubtractionFact): TeachingSubgroupId[] => {
   return subgroups
 }
 
-export const getPrimaryGroup = (fact: SubtractionFact): TeachingGroupId => {
+export const getPrimaryGroup = (fact: SubtractionFact): TeachingGroupId | null => {
   if (isCrossingBelowTen(fact)) {
     return 'crossingBelowTen'
   }
@@ -91,7 +88,7 @@ export const getPrimaryGroup = (fact: SubtractionFact): TeachingGroupId => {
     return 'bothAtMostTen'
   }
 
-  return 'crossingBelowTen'
+  return null
 }
 
 export const classifyFact = (fact: SubtractionFact): ClassifiedFact => {
@@ -103,7 +100,7 @@ export const classifyFact = (fact: SubtractionFact): ClassifiedFact => {
     id: factId(fact),
     primaryGroup,
     subgroups,
-    tags: [primaryGroup, ...subgroups],
+    tags: primaryGroup ? [primaryGroup, ...subgroups] : [...subgroups],
   }
 }
 
@@ -111,9 +108,6 @@ export const getHighlightContext = (fact: SubtractionFact): HighlightContext => 
   const classified = classifyFact(fact)
 
   return {
-    rowMinuend: fact.minuend,
-    columnSubtrahend: fact.subtrahend,
-    result: fact.result,
     primaryGroup: classified.primaryGroup,
     subgroups: classified.subgroups,
   }

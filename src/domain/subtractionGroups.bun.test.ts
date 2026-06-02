@@ -28,12 +28,13 @@ describe('subtraction group classification', () => {
     expect(classifyFact({ minuend: 9, subtrahend: 4, result: 5 }).primaryGroup).toBe('bothAtMostTen')
   })
 
-  it('returns overlapping row, column, result, primary-group and subgroup highlights', () => {
+  it('does not put result-ten crossing facts into a requested teaching group', () => {
+    expect(classifyFact({ minuend: 11, subtrahend: 1, result: 10 }).primaryGroup).toBeNull()
+  })
+
+  it('returns only the selected teaching group for highlights', () => {
     const context = getHighlightContext({ minuend: 14, subtrahend: 9, result: 5 })
 
-    expect(context.rowMinuend).toBe(14)
-    expect(context.columnSubtrahend).toBe(9)
-    expect(context.result).toBe(5)
     expect(context.primaryGroup).toBe('crossingBelowTen')
     expect(context.subgroups).toEqual(['resultFive'])
   })
