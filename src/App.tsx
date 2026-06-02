@@ -20,7 +20,7 @@ const getFactButtonClasses = (fact: ClassifiedFact, active: HighlightContext | n
   const activeSubgroup = active?.subgroups.find((subgroup) => fact.subgroups.includes(subgroup))
 
   return [
-    'relative flex aspect-square min-h-11 w-full min-w-11 touch-manipulation select-none items-center justify-center rounded-lg border text-[0.65rem] font-semibold transition duration-150 sm:min-h-10 sm:min-w-10 sm:text-xs lg:min-h-9 lg:min-w-9',
+    'relative flex aspect-square w-full min-w-0 touch-manipulation select-none items-center justify-center rounded-sm border text-[0.5rem] font-semibold transition duration-150 sm:rounded-md sm:text-[0.65rem] md:rounded-lg lg:text-xs',
     groupStyles[fact.primaryGroup],
     isActiveGroup ? 'opacity-100 saturate-150' : active ? 'opacity-35 grayscale' : 'opacity-90',
     isActiveResult ? 'scale-105 border-slate-950 bg-white text-slate-950 shadow-lg' : '',
@@ -49,16 +49,19 @@ function App() {
   const getTooltipId = (fact: ClassifiedFact) => `tooltip-${fact.id}`
 
   return (
-    <main className="min-h-screen bg-slate-50 px-3 py-4 text-slate-950 sm:px-5 lg:px-8">
-      <div className="overflow-auto overscroll-contain [touch-action:pan-x_pan-y_pinch-zoom]" aria-label="Subtraktionstabelle">
-        <div className="grid min-w-[64rem] grid-cols-[3.5rem_repeat(21,minmax(2.55rem,1fr))] gap-1 md:min-w-0">
-          <div className="sticky left-0 top-0 z-30 rounded-lg bg-slate-900 px-2 py-3 text-center text-xs font-black text-white">
+    <main className="min-h-screen bg-slate-50 px-1 py-2 text-slate-950 sm:px-3 lg:px-4">
+      <div className="w-full overflow-visible" aria-label="Subtraktionstabelle">
+        <div
+          data-testid="subtraction-table-grid"
+          className="grid w-full grid-cols-[clamp(1.25rem,5vw,3.5rem)_repeat(21,minmax(0,1fr))] gap-0.5 sm:gap-1"
+        >
+          <div className="sticky left-0 top-0 z-30 rounded-sm bg-slate-900 px-0.5 py-1 text-center text-[0.55rem] font-black text-white sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs">
             −
           </div>
           {tableNumbers.map((subtrahend) => (
             <div
               key={`subtrahend-${subtrahend}`}
-              className={`sticky top-0 z-20 rounded-lg px-2 py-3 text-center text-xs font-black ${
+              className={`sticky top-0 z-20 rounded-sm px-0.5 py-1 text-center text-[0.55rem] font-black sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs ${
                 activeContext?.columnSubtrahend === subtrahend ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-950'
               }`}
             >
@@ -69,7 +72,7 @@ function App() {
           {tableNumbers.map((minuend) => [
             <div
               key={`minuend-${minuend}`}
-              className={`sticky left-0 z-10 rounded-lg px-2 py-3 text-center text-xs font-black ${
+              className={`sticky left-0 z-10 rounded-sm px-0.5 py-1 text-center text-[0.55rem] font-black sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs ${
                 activeContext?.rowMinuend === minuend ? 'bg-blue-800 text-white' : 'bg-blue-100 text-blue-950'
               }`}
             >
@@ -79,7 +82,7 @@ function App() {
               const fact = factsById.get(factId({ minuend, subtrahend }))
 
               if (!fact) {
-                return <div key={`empty-${minuend}-${subtrahend}`} className="min-h-11 rounded-lg bg-slate-100/60 sm:min-h-10 lg:min-h-9" />
+                return <div key={`empty-${minuend}-${subtrahend}`} className="aspect-square w-full rounded-sm bg-slate-100/60 sm:rounded-lg" />
               }
 
               const isSelected = activeFact?.id === fact.id
@@ -100,7 +103,7 @@ function App() {
                     <span
                       id={getTooltipId(fact)}
                       role="tooltip"
-                      className="pointer-events-none absolute left-1/2 top-full z-40 mt-2 w-72 -translate-x-1/2 rounded-xl border border-slate-900 bg-white p-3 text-left text-xs font-semibold leading-5 text-slate-950 shadow-xl"
+                      className="pointer-events-none absolute left-1/2 top-full z-40 mt-2 w-[min(18rem,90vw)] -translate-x-1/2 rounded-xl border border-slate-900 bg-white p-3 text-left text-xs font-semibold leading-5 text-slate-950 shadow-xl"
                     >
                       <span className="block text-base font-black">
                         {fact.minuend} − {fact.subtrahend} = {fact.result}

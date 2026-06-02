@@ -15,6 +15,17 @@ describe('Subtraction map interactions', () => {
     expect(screen.getByRole('button', { name: '18 − 9 = 9' })).toBeInTheDocument()
   })
 
+  it('uses a fluid table grid that fits the viewport instead of forcing a fixed scroll width', () => {
+    render(<App />)
+
+    const tableGrid = screen.getByTestId('subtraction-table-grid')
+    expect(tableGrid).toHaveClass('w-full')
+    expect(tableGrid.className).toContain('repeat(21,minmax(0,1fr))')
+    expect(tableGrid.className).not.toContain('min-w-[64rem]')
+
+    expect(screen.getByRole('button', { name: '11 − 6 = 5' }).className).not.toContain('min-w-11')
+  })
+
   it('shows operation information in a tooltip only after clicking a fact', async () => {
     const user = userEvent.setup()
     render(<App />)
