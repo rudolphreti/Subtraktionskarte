@@ -15,12 +15,17 @@ describe('Subtraction map interactions', () => {
     expect(screen.getByRole('button', { name: '18 − 9 = 9' })).toBeInTheDocument()
   })
 
-  it('uses a fluid table grid that fits the viewport instead of forcing a fixed scroll width', () => {
+  it('sizes every table cell from both viewport width and height so the whole table stays visible', () => {
     render(<App />)
 
+    const table = screen.getByLabelText('Subtraktionstabelle')
     const tableGrid = screen.getByTestId('subtraction-table-grid')
-    expect(tableGrid).toHaveClass('w-full')
-    expect(tableGrid.className).toContain('repeat(21,minmax(0,1fr))')
+
+    expect(table).toHaveClass('h-full')
+    expect(table).toHaveClass('overflow-visible')
+    expect(tableGrid.className).toContain('--table-cell-size:min(calc((100vw-0.5rem-21px)/22),calc((100dvh-0.5rem-21px)/22))')
+    expect(tableGrid.className).toContain('grid-cols-[repeat(22,var(--table-cell-size))]')
+    expect(tableGrid.className).toContain('auto-rows-[var(--table-cell-size)]')
     expect(tableGrid.className).not.toContain('min-w-[64rem]')
 
     expect(screen.getByRole('button', { name: '11 − 6 = 5' }).className).not.toContain('min-w-11')

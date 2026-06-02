@@ -20,7 +20,7 @@ const getFactButtonClasses = (fact: ClassifiedFact, active: HighlightContext | n
   const activeSubgroup = active?.subgroups.find((subgroup) => fact.subgroups.includes(subgroup))
 
   return [
-    'relative flex aspect-square w-full min-w-0 touch-manipulation select-none items-center justify-center rounded-sm border text-[0.5rem] font-semibold transition duration-150 sm:rounded-md sm:text-[0.65rem] md:rounded-lg lg:text-xs',
+    'relative flex h-full w-full min-w-0 touch-manipulation select-none items-center justify-center rounded-[2px] border text-[clamp(0.35rem,1.6vmin,0.75rem)] font-semibold transition duration-150 sm:rounded-md',
     groupStyles[fact.primaryGroup],
     isActiveGroup ? 'opacity-100 saturate-150' : active ? 'opacity-35 grayscale' : 'opacity-90',
     isActiveResult ? 'scale-105 border-slate-950 bg-white text-slate-950 shadow-lg' : '',
@@ -49,19 +49,19 @@ function App() {
   const getTooltipId = (fact: ClassifiedFact) => `tooltip-${fact.id}`
 
   return (
-    <main className="min-h-screen bg-slate-50 px-1 py-2 text-slate-950 sm:px-3 lg:px-4">
-      <div className="w-full overflow-visible" aria-label="Subtraktionstabelle">
+    <main className="h-dvh overflow-hidden bg-slate-50 p-1 text-slate-950">
+      <div className="flex h-full w-full items-center justify-center overflow-visible" aria-label="Subtraktionstabelle">
         <div
           data-testid="subtraction-table-grid"
-          className="grid w-full grid-cols-[clamp(1.25rem,5vw,3.5rem)_repeat(21,minmax(0,1fr))] gap-0.5 sm:gap-1"
+          className="grid [--table-cell-size:min(calc((100vw-0.5rem-21px)/22),calc((100dvh-0.5rem-21px)/22))] auto-rows-[var(--table-cell-size)] grid-cols-[repeat(22,var(--table-cell-size))] gap-px"
         >
-          <div className="sticky left-0 top-0 z-30 rounded-sm bg-slate-900 px-0.5 py-1 text-center text-[0.55rem] font-black text-white sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs">
+          <div className="sticky left-0 top-0 z-30 flex items-center justify-center rounded-[2px] bg-slate-900 text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black text-white sm:rounded-md">
             −
           </div>
           {tableNumbers.map((subtrahend) => (
             <div
               key={`subtrahend-${subtrahend}`}
-              className={`sticky top-0 z-20 rounded-sm px-0.5 py-1 text-center text-[0.55rem] font-black sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs ${
+              className={`sticky top-0 z-20 flex items-center justify-center rounded-[2px] text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black sm:rounded-md ${
                 activeContext?.columnSubtrahend === subtrahend ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-950'
               }`}
             >
@@ -72,7 +72,7 @@ function App() {
           {tableNumbers.map((minuend) => [
             <div
               key={`minuend-${minuend}`}
-              className={`sticky left-0 z-10 rounded-sm px-0.5 py-1 text-center text-[0.55rem] font-black sm:rounded-lg sm:px-2 sm:py-3 sm:text-xs ${
+              className={`sticky left-0 z-10 flex items-center justify-center rounded-[2px] text-center text-[clamp(0.35rem,1.6vmin,0.75rem)] font-black sm:rounded-md ${
                 activeContext?.rowMinuend === minuend ? 'bg-blue-800 text-white' : 'bg-blue-100 text-blue-950'
               }`}
             >
@@ -82,7 +82,7 @@ function App() {
               const fact = factsById.get(factId({ minuend, subtrahend }))
 
               if (!fact) {
-                return <div key={`empty-${minuend}-${subtrahend}`} className="aspect-square w-full rounded-sm bg-slate-100/60 sm:rounded-lg" />
+                return <div key={`empty-${minuend}-${subtrahend}`} className="h-full w-full rounded-[2px] bg-slate-100/60 sm:rounded-md" />
               }
 
               const isSelected = activeFact?.id === fact.id
